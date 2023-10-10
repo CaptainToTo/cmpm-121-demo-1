@@ -31,11 +31,10 @@ canvas.setButtonSize(10);
 canvas.buildCup(100, 350, 300, maxJuiceHeight);
 canvas.setCupHeight(0);
 
-
 function updateFruit(): any {
   fr.hit();
   curFontSize -= (originalFontSize - smallestFontSize) / fr.getOriginalHealth();
-  
+
   if (fr.isCrushed()) {
     fr = getNewFruit();
     canvas.setButtonContent(fr.getChar());
@@ -46,7 +45,7 @@ function updateFruit(): any {
 
 function updateJuice(): any {
   jc.addJuice(fr.getColor());
-  
+
   if (jc.isFull()) {
     money += jc.getPrice(pricePerUnit);
     canvas.setMoney("$" + money);
@@ -59,9 +58,8 @@ function updateJuice(): any {
 
 function updateJuicing(): any {
   updateJuice();
-  updateFruit();  
+  updateFruit();
 }
-
 
 const gameName = "Juice Juice";
 
