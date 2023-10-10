@@ -1,43 +1,53 @@
-
 const fruitOptions = [
-    {char: "🍈", color: 0x9BFF69, hits: 20},
-    {char: "🍓", color: 0xF9627B, hits: 10},
-    {char: "🥝", color: 0xCBEC90, hits: 10},
-    {char: "🥭", color: 0xFFA23E, hits: 14},
-    {char: "🍋", color: 0xF2FF5C, hits: 12},
-    {char: "🍑", color: 0xFFC9AC, hits: 10},
-    {char: "🍊", color: 0xFF940B, hits: 12},
-    {char: "🍉", color: 0xFF4D4D, hits: 20},
-    {char: "🍒", color: 0xF10000, hits: 6},
-    {char: "🍏", color: 0xB9FFA0, hits: 8},
-    {char: "🍇", color: 0xDC3CE9, hits: 16},
-    {char: "🍌", color: 0xF2E28D, hits: 8},
-    {char: "🍎", color: 0xFF6565, hits: 8},
-]
+  { char: "🍈", color: 0x9bff69, hits: 20 },
+  { char: "🍓", color: 0xf9627b, hits: 10 },
+  { char: "🥝", color: 0xcbec90, hits: 10 },
+  { char: "🥭", color: 0xffa23e, hits: 14 },
+  { char: "🍋", color: 0xf2ff5c, hits: 12 },
+  { char: "🍑", color: 0xffc9ac, hits: 10 },
+  { char: "🍊", color: 0xff940b, hits: 12 },
+  { char: "🍉", color: 0xff4d4d, hits: 20 },
+  { char: "🍒", color: 0xf10000, hits: 6 },
+  { char: "🍏", color: 0xb9ffa0, hits: 8 },
+  { char: "🍇", color: 0xdc3ce9, hits: 16 },
+  { char: "🍌", color: 0xf2e28d, hits: 8 },
+  { char: "🍎", color: 0xff6565, hits: 8 },
+];
 
 export class Fruit {
-    char: string;
-    color: number;
-    health: number;
-    fullHealth: number;
-    constructor() {
-        const i: number = Math.floor(Math.random() * fruitOptions.length);
-        this.char = fruitOptions[i].char;
-        this.color = fruitOptions[i].color;
-        this.health = fruitOptions[i].hits;
-        this.fullHealth = this.health;
-    }
+  char: string;
+  color: number;
+  health: number;
+  fullHealth: number;
+  constructor() {
+    const i: number = Math.floor(Math.random() * fruitOptions.length);
+    this.char = fruitOptions[i].char;
+    this.color = fruitOptions[i].color;
+    this.health = fruitOptions[i].hits;
+    this.fullHealth = this.health;
+  }
 
-    getOriginalHealth(): number { return this.fullHealth;}
+  getOriginalHealth(): number {
+    return this.fullHealth;
+  }
 
-    hit() { this.health--; }
+  hit() {
+    this.health--;
+  }
 
-    isCrushed(): boolean { return this.health <= 0; }
+  isCrushed(): boolean {
+    return this.health <= 0;
+  }
 
-    getChar(): string { return this.char; }
+  getChar(): string {
+    return this.char;
+  }
 
-    getColor(): number { return this.color; }
+  getColor(): number {
+    return this.color;
+  }
 
-    getColorStyle(): string { return "#" + this.color.toString(16); }
-
+  getColorStyle(): string {
+    return "#" + this.color.toString(16);
+  }
 }
