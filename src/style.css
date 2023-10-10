@@ -36,6 +36,11 @@ h1 {
   line-height: 1.1;
 }
 
+h2 {
+  font-size: 2.5em;
+  line-height: 1.1;
+}
+
 #app {
   max-width: 1280px;
   margin: 0 auto;
@@ -44,22 +49,31 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
+  position: absolute;
   font-size: 10em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
 }
-button:hover {
-  border-color: #646cff;
+
+.money {
+  position: absolute;
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
+.cup {
+  position: absolute;
+  display: inline-block;
+}
+
+.cupBackground {
+  position: absolute;
+  display: inline-block;
+  border: solid;
+  border-top-width: 0px;
+  border-bottom-width: 5px;
+  border-left-width: 3px;
+  border-right-width: 3px;
+  border-color: white;
 }
 
 @media (prefers-color-scheme: light) {

@@ -24,4 +24,12 @@ export class Juice {
   isFull(): boolean {
     return this.juices.length >= this.max;
   }
+
+  getPrice(pricePerUnit: number): number {
+    return this.juices.length * pricePerUnit;
+  }
+
+  getFillAmount(): number {
+    return this.juices.length / this.max;
+  }
 }

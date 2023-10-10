@@ -1,24 +1,15 @@
 import "./style.css";
 import { Fruit } from "./fruit.ts";
 import { Juice } from "./juice.ts";
+import { Canvas } from "./canvas.ts";
 
 const originalFontSize: number = 10;
-const smallestFontSize: number = 2;
+const smallestFontSize: number = 4;
 let curFontSize: number = originalFontSize;
 
-function updateJuicing() {
-  fr.hit();
-  curFontSize -= (originalFontSize - smallestFontSize) / fr.getOriginalHealth();
-  jc.addJuice(fr.getColor());
-  if (fr.isCrushed()) {
-    fr = getNewFruit();
-    button.innerHTML = fr.getChar();
-    button.style.backgroundColor = fr.getColorStyle();
-    curFontSize = originalFontSize;
-  }
-  button.style.fontSize = curFontSize + "em";
-  app.style.backgroundColor = jc.getColorStyle();
-}
+const maxJuiceHeight: number = 500;
+
+const pricePerUnit: number = 5;
 
 function getNewFruit(): Fruit {
   return new Fruit();
@@ -29,17 +20,49 @@ function getNewJuice(): Juice {
 }
 
 let fr: Fruit = getNewFruit();
-const jc: Juice = getNewJuice();
+let jc: Juice = getNewJuice();
+let money: number = 0;
 
-const app: HTMLDivElement = document.querySelector("#app")!;
+const canvas = new Canvas(1000, 800);
+canvas.buildMoney(600, 100);
+canvas.buildButton(100, 100, updateJuicing);
+canvas.setButtonContent("🍓");
+canvas.setButtonSize(10);
+canvas.buildCup(100, 350, 300, maxJuiceHeight);
+canvas.setCupHeight(0);
+
+
+function updateFruit(): any {
+  fr.hit();
+  curFontSize -= (originalFontSize - smallestFontSize) / fr.getOriginalHealth();
+  
+  if (fr.isCrushed()) {
+    fr = getNewFruit();
+    canvas.setButtonContent(fr.getChar());
+    curFontSize = originalFontSize;
+  }
+  canvas.setButtonSize(curFontSize);
+}
+
+function updateJuice(): any {
+  jc.addJuice(fr.getColor());
+  
+  if (jc.isFull()) {
+    money += jc.getPrice(pricePerUnit);
+    canvas.setMoney("$" + money);
+    jc = getNewJuice();
+  }
+
+  canvas.setCupColor(jc.getColorStyle());
+  canvas.setCupHeight(jc.getFillAmount());
+}
+
+function updateJuicing(): any {
+  updateJuice();
+  updateFruit();  
+}
+
 
 const gameName = "Juice Juice";
 
 document.title = gameName;
-
-const button = document.createElement("button");
-button.style.fontSize = curFontSize + "em";
-button.innerHTML = fr.getChar();
-button.style.backgroundColor = fr.getColorStyle();
-button.addEventListener("click", updateJuicing);
-app.append(button);
