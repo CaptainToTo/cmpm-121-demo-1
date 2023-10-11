@@ -13,7 +13,6 @@ export class Juice {
       avgColor += juice;
     });
     avgColor /= this.juices.length;
-    console.log("#" + Math.floor(avgColor).toString(16));
     return "#" + Math.floor(avgColor).toString(16);
   }
 

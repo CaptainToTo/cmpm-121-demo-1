@@ -11,6 +11,9 @@ export class Canvas {
 
   cupBackground: HTMLDivElement;
 
+  autoClickUpgrade: HTMLElement;
+  priceIncreaseUpgrade: HTMLElement;
+
   constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
@@ -31,8 +34,18 @@ export class Canvas {
     this.cupBackground = document.createElement("div");
     this.cupBackground.className = "cupBackground";
 
+    this.autoClickUpgrade = document.createElement("button");
+    this.autoClickUpgrade.className = "autoClickUpgrade";
+
+    this.priceIncreaseUpgrade = document.createElement("button");
+    this.priceIncreaseUpgrade.className = "priceIncreaseUpgrade";
+
     this.maxCupHeight = 0;
     this.cupTopMargin = 0;
+  }
+
+  buildCanvas(width: number, height: number): Canvas {
+    return new Canvas(width, height);
   }
 
   buildButton(x: number, y: number, pressFunction: () => any): Canvas {
@@ -99,6 +112,42 @@ export class Canvas {
 
   setCupColor(color: string): Canvas {
     this.cup.style.backgroundColor = color;
+    return this;
+  }
+
+  buildAutoClickButton(x: number, y: number, pressFunction: () => any): Canvas {
+    this.autoClickUpgrade.style.top = y + "px";
+    this.autoClickUpgrade.style.left = x + "px";
+    this.autoClickUpgrade.style.fontSize = "3em";
+    this.autoClickUpgrade.addEventListener("click", pressFunction);
+
+    this.canvasElem.append(this.autoClickUpgrade);
+
+    return this;
+  }
+
+  setAutoClickContent(value: string): Canvas {
+    this.autoClickUpgrade.innerHTML = value;
+    return this;
+  }
+
+  buildPriceIncreaseButton(
+    x: number,
+    y: number,
+    pressFunction: () => any,
+  ): Canvas {
+    this.priceIncreaseUpgrade.style.top = y + "px";
+    this.priceIncreaseUpgrade.style.left = x + "px";
+    this.priceIncreaseUpgrade.style.fontSize = "3em";
+    this.priceIncreaseUpgrade.addEventListener("click", pressFunction);
+
+    this.canvasElem.append(this.priceIncreaseUpgrade);
+
+    return this;
+  }
+
+  setPriceIncreaseContent(value: string): Canvas {
+    this.priceIncreaseUpgrade.innerHTML = value;
     return this;
   }
 }
