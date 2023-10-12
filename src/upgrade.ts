@@ -1,21 +1,49 @@
 export class Upgrade {
   name: string;
+  desc: string;
   level: number;
   maxLevel: number;
   price: number;
-  action: () => any;
+  priceStep: number;
+  action: (() => any) | null;
 
-  constructor(
-    name: string,
-    maxLevel: number,
-    price: number,
-    action: () => any,
-  ) {
+  constructor(name: string) {
     this.name = name;
+    this.desc = "";
     this.level = 0;
+    this.maxLevel = 0;
+    this.price = 0;
+    this.priceStep = 0;
+    this.action = null;
+  }
+
+  static buildUpgrade(name: string): Upgrade {
+    return new Upgrade(name);
+  }
+
+  setDesc(desc: string): Upgrade {
+    this.desc = desc;
+    return this;
+  }
+
+  setMaxLevel(maxLevel: number): Upgrade {
     this.maxLevel = maxLevel;
+    return this;
+  }
+
+  setPrice(price: number): Upgrade {
     this.price = price;
+    return this;
+  }
+
+  setPriceStep(step: number): Upgrade {
+    this.priceStep = step;
+    return this;
+  }
+
+  setAction(action: () => any): Upgrade {
     this.action = action;
+    return this;
   }
 
   buy() {
@@ -25,6 +53,10 @@ export class Upgrade {
 
   getLevel(): number {
     return this.level;
+  }
+
+  getPriceStep(): number {
+    return this.priceStep;
   }
 
   isAtMax(): boolean {
@@ -40,6 +72,18 @@ export class Upgrade {
   }
 
   doAction() {
-    this.action();
+    if (this.action) {
+      this.action();
+    }
+  }
+
+  toString(): string {
+    let content: string = "";
+    if (this.isAtMax()) {
+      content = `${this.name} Max Lvl<br>${this.desc}`;
+    } else {
+      content = `${this.name} Lvl ${this.level}: $${this.price}<br>${this.desc}`;
+    }
+    return content;
   }
 }

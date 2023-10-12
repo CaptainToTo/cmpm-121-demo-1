@@ -3,6 +3,7 @@ import { Fruit } from "./fruit.ts";
 import { Juice } from "./juice.ts";
 import { Canvas } from "./canvas.ts";
 import { Upgrade } from "./upgrade.ts";
+import { UpgradeFactory } from "./upgrade-factory.ts";
 
 const originalFontSize: number = 10;
 const smallestFontSize: number = 4;
@@ -11,22 +12,27 @@ let curFontSize: number = originalFontSize;
 const maxJuiceHeight: number = 500;
 
 let pricePerUnit: number = 5;
+let cupVolume: number = 30;
 
 let autoClickSpeed: number = -1;
 let autoClicker: number;
+
+let hitPerClick: number = 1;
+
+let upgradeProgress: number = 0;
 
 function getNewFruit(): Fruit {
   return new Fruit();
 }
 
 function getNewJuice(): Juice {
-  return new Juice(30);
+  return new Juice(cupVolume);
 }
 
 let fr: Fruit = getNewFruit();
 let jc: Juice = getNewJuice();
 let money: number = 0;
-const autoClick: Upgrade = new Upgrade("Blender", 5, 500, () => {
+const autoClick: Upgrade = UpgradeFactory.buildBlender().setAction(() => {
   if (autoClickSpeed == -1) {
     autoClickSpeed = 500;
   } else {
@@ -35,59 +41,77 @@ const autoClick: Upgrade = new Upgrade("Blender", 5, 500, () => {
   clearInterval(autoClicker);
   autoClicker = setInterval(updateJuicing, autoClickSpeed);
 });
-const priceIncrease: Upgrade = new Upgrade("Bigger Cups", 5, 800, () => {
+const biggerCups: Upgrade = UpgradeFactory.buildBiggerCups().setAction(() => {
   pricePerUnit += 5;
+  cupVolume += 5;
 });
-
-const canvas = new Canvas(1000, 800);
-canvas.buildMoney(600, 100);
-
-canvas.buildButton(100, 100, updateJuicing);
-canvas.setButtonContent("🍓");
-canvas.setButtonSize(10);
-
-canvas.buildCup(100, 350, 300, maxJuiceHeight);
-canvas.setCupHeight(0);
-
-canvas.buildAutoClickButton(600, 250, () => {
-  if (money >= autoClick.getPrice() && !autoClick.isAtMax()) {
-    money -= autoClick.getPrice();
-    canvas.setMoney("$" + money);
-    autoClick.buy();
-    autoClick.doAction();
-    autoClick.increasePrice(100);
-    let content: string = "";
-    if (autoClick.isAtMax()) {
-      content = `${autoClick.name} Max Lvl!`;
-    } else {
-      content = `${autoClick.name} Lvl ${autoClick.level}: $${autoClick.price}`;
+const employees: Upgrade = UpgradeFactory.buildEmployees().setAction(() => {
+  hitPerClick += 1;
+});
+const investments: Upgrade = UpgradeFactory.buildInvestments().setAction(() => {
+  money *= 2;
+});
+const unionBusting: Upgrade = UpgradeFactory.buildUnionBusting().setAction(
+  () => {
+    if (employees.getPrice() >= 600) {
+      employees.setPrice(employees.getPrice() - 500);
+      canvas.setUpgradeContent(employees.name, employees.toString());
     }
-    canvas.setAutoClickContent(content);
-  }
-});
-canvas.setAutoClickContent(
-  `${autoClick.name} Lvl ${autoClick.level}: $${autoClick.price}`,
+  },
 );
 
-canvas.buildPriceIncreaseButton(600, 500, () => {
-  if (money >= priceIncrease.getPrice() && !priceIncrease.isAtMax()) {
-    money -= priceIncrease.getPrice();
-    priceIncrease.buy();
+let curCheckpoint: number = 0;
+const checkpoints: { upgrade: Upgrade; checkpoint: number }[] = [
+  { upgrade: biggerCups, checkpoint: 2 },
+  { upgrade: employees, checkpoint: 5 },
+  { upgrade: investments, checkpoint: 8 },
+  { upgrade: unionBusting, checkpoint: 10 },
+];
+
+function buyUpgrade(upgrade: Upgrade, canvas: Canvas) {
+  if (money >= upgrade.getPrice() && !upgrade.isAtMax()) {
+    money -= upgrade.getPrice();
     canvas.setMoney("$" + money);
-    priceIncrease.doAction();
-    priceIncrease.increasePrice(100);
-    let content: string = "";
-    if (priceIncrease.isAtMax()) {
-      content = `${priceIncrease.name} Max Lvl!`;
-    } else {
-      content = `${priceIncrease.name} Lvl ${priceIncrease.level}: $${priceIncrease.price}`;
-    }
-    canvas.setPriceIncreaseContent(content);
+    upgrade.buy();
+    upgrade.doAction();
+    upgrade.increasePrice(upgrade.getPriceStep());
+    canvas.setUpgradeContent(upgrade.name, upgrade.toString());
+    upgradeProgress++;
+    checkUpgradeProgress();
   }
-});
-canvas.setPriceIncreaseContent(
-  `${priceIncrease.name} Lvl ${priceIncrease.level}: $${priceIncrease.price}`,
-);
+}
+
+function checkUpgradeProgress() {
+  if (upgradeProgress >= checkpoints[curCheckpoint].checkpoint) {
+    const upgrade = checkpoints[curCheckpoint].upgrade;
+
+    canvas
+      .addUpgrade(upgrade.name, () => {
+        buyUpgrade(upgrade, canvas);
+      })
+      .setUpgradeContent(upgrade.name, upgrade.toString());
+    curCheckpoint++;
+  }
+}
+
+const canvas = Canvas.buildCanvas(window.innerWidth, window.innerHeight)
+  .buildMoney(500, 150)
+  .buildButton(100, 150, () => {
+    for (let i = 0; i < hitPerClick; i++) {
+      updateJuicing();
+    }
+  })
+  .setButtonContent(fr.getChar())
+  .setButtonSize(10)
+  .buildCup(100, 400, 300, maxJuiceHeight)
+  .setCupHeight(0);
+
+canvas
+  .setUpgradesOffset(500, 300)
+  .addUpgrade(autoClick.name, () => {
+    buyUpgrade(autoClick, canvas);
+  })
+  .setUpgradeContent(autoClick.name, autoClick.toString());
 
 function updateFruit(): any {
   fr.hit();
